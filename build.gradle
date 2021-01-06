@@ -1,0 +1,68 @@
+plugins {
+	id 'org.springframework.boot' version '2.4.1'
+	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+	id "com.google.protobuf" version "0.8.10"
+	id 'java'
+}
+
+group = 'com.pn'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.jetbrains:annotations:19.0.0'
+	compileOnly "javax.annotation:javax.annotation-api:1.2"
+	compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+	runtimeOnly 'com.h2database:h2'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.10.0'
+	compile group: 'io.grpc', name: 'grpc-all', version: '1.25.0'
+	compile 'io.github.lognet:grpc-spring-boot-starter:3.5.3'
+}
+
+sourceSets {
+	main {
+		proto {
+			srcDir 'src/main/proto'
+		}
+		java {
+			srcDirs 'src/main/java', 'generated-sources/main/java', 'generated-sources/main/grpc'
+		}
+	}
+}
+
+protobuf {
+	protoc {
+		artifact = 'com.google.protobuf:protoc:3.10.1'
+	}
+	plugins {
+		grpc {
+			artifact = 'io.grpc:protoc-gen-grpc-java:1.25.0'
+		}
+	}
+
+	// ****
+	generateProtoTasks.generatedFilesBaseDir = 'generated-sources'
+
+	generateProtoTasks {
+		all()*.plugins {
+			grpc {}
+		}
+	}
+}
+
+
+test {
+	useJUnitPlatform()
+}
+
+//task getDeps(type: Copy) {
+//	from configurations.runtime
+//	into 'runtime/'
+//}
